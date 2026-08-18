@@ -262,7 +262,7 @@ npm run build      # production build
 
 ---
 
-## Assignment requirements checklist
+## requirements checklist
 
 - [x] Real graph database app on CognoDB (openCypher over Bolt, official driver)
 - [x] All Cypher parameterized
