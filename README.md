@@ -154,6 +154,40 @@ CognoDB's `shortestPath` explores the graph bidirectionally and returns the shor
 
 ---
 
+## How it works — a simple example
+
+Think of the data as one giant web of **who worked with whom**. Three everyday situations:
+
+**1. You're on an actor's page → they suggest movies**
+If **Keanu Reeves** acted in *The Matrix*, the person page shows *The Matrix* in his filmography, and every other movie that shares at least one cast member or genre appears below as a recommendation — ranked by how much overlap they share.
+
+```
+Keanu Reeves
+  ├─ The Matrix         (his movie)
+  ├─ John Wick          (recommended — shares Keanu)
+  ├─ Speed              (recommended — shares Keanu)
+  └─ The Devil's Advocate (recommended — shares Keanu)
+```
+
+**2. Two people are in the SAME movie → instant connection**
+If you pick **Keanu Reeves** and **Laurence Fishburne** in the Connection Explorer, the app finds they starred together in *The Matrix* — a direct **1-hop path**, shown immediately:
+
+```
+Keanu Reeves ──(The Matrix)── Laurence Fishburne      (1 hop, done!)
+```
+
+**3. Two people are in DIFFERENT movies → the graph walks the chain**
+Keanu Reeves and Tom Hanks have never shared a film, so the app hops through co-stars until they meet — *The Matrix → Contagion → Inception → Catch Me If You Can* (8 hops, 4 steps). This is the "6 degrees of separation" search:
+
+```
+Keanu Reeves → The Matrix → Laurence Fishburne → Contagion → Marion Cotillard
+    → Inception → Leonardo DiCaprio → Catch Me If You Can → Tom Hanks
+```
+
+Every recommendation and every path is computed **live** by walking relationships in the graph database — no precomputed tables.
+
+---
+
 ## Project structure
 
 ```
