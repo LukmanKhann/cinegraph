@@ -82,30 +82,23 @@ export default function AsyncPicker({
   }, [inputValue, kind, excludeId]);
 
   return (
-    <Autocomplete<PickerItem, false, false, true>
-      freeSolo
-      autoHighlight
+    <Autocomplete<PickerItem, false, false, false>
+      autoHighlight={false}
       options={options}
       value={value}
       inputValue={inputValue}
       onChange={(_event, item) => {
-        if (item && typeof item !== "string") {
+        if (item) {
           onChange?.(item);
           onSelect?.(item);
-        } else if (item === null) {
+        } else {
           onChange?.(null);
         }
       }}
       onInputChange={(_event, nextValue) => setInputValue(nextValue)}
-      getOptionLabel={(option) =>
-        typeof option === "string" ? option : option.label
-      }
+      getOptionLabel={(option) => option.label}
       loading={loading}
-      isOptionEqualToValue={(option, selected) =>
-        typeof option === "string" || typeof selected === "string"
-          ? option === selected
-          : option.id === selected.id
-      }
+      isOptionEqualToValue={(option, selected) => option.id === selected.id}
       noOptionsText={`No ${kind === "person" ? "people" : "movies"} match`}
       renderOption={(props, option) => {
         const { key, ...optionProps } = props;
