@@ -24,7 +24,8 @@ export default function HealthPill() {
     };
   }, []);
 
-  const color = health === "ok" ? "var(--cg-dark)" : health === "down" ? "var(--cg-secondary)" : "var(--cg-muted)";
+  const color =
+    health === "ok" ? "#16a34a" : health === "down" ? "#dc2626" : "var(--cg-muted)";
 
   return (
     <Box
