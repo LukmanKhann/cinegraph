@@ -1,12 +1,15 @@
+import Box from "@mui/material/Box";
+import Skeleton from "@mui/material/Skeleton";
+
 export function SkeletonCard() {
   return (
-    <div className="overflow-hidden rounded-xl border border-edge bg-surface">
-      <div className="h-28 animate-pulse bg-surface2" />
-      <div className="space-y-2 p-3">
-        <div className="h-3.5 w-3/4 animate-pulse rounded bg-surface2" />
-        <div className="h-3 w-1/2 animate-pulse rounded bg-surface2" />
-      </div>
-    </div>
+    <Box className="overflow-hidden border-2 border-[#0B0B0B] bg-[#FFFFFF] shadow-[4px_4px_0_#0B0B0B]">
+      <Skeleton variant="rectangular" height={112} />
+      <Box sx={{ p: 1.5 }}>
+        <Skeleton variant="text" width="75%" sx={{ fontSize: "1rem" }} />
+        <Skeleton variant="text" width="50%" sx={{ fontSize: "0.8rem" }} />
+      </Box>
+    </Box>
   );
 }
 
@@ -20,11 +23,24 @@ export function SkeletonRows({ count = 6 }: { count?: number }) {
   );
 }
 
-export function Spinner({ label = "Loading…" }: { label?: string }) {
+export function Spinner({ label = "Walking the graph…" }: { label?: string }) {
   return (
-    <div className="flex items-center gap-2.5 text-sm text-muted">
-      <span className="h-4 w-4 animate-spin rounded-full border-2 border-edge border-t-accent" />
-      {label}
-    </div>
+    <Box className="inline-flex items-center gap-2.5 text-sm font-bold">
+      <Skeleton
+        variant="circular"
+        width={22}
+        height={22}
+        sx={{
+          border: "2px solid #0B0B0B",
+          bgcolor: "#FFE600",
+          animation: "skeleton-pulse 1.2s ease-in-out infinite",
+          "@keyframes skeleton-pulse": {
+            "0%,100%": { transform: "scale(1)" },
+            "50%": { transform: "scale(0.7)" },
+          },
+        }}
+      />
+      <span className="uppercase tracking-wide text-[#6B6B6B]">{label}</span>
+    </Box>
   );
 }

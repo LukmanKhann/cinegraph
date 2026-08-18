@@ -2,9 +2,15 @@
 
 import { useCallback, useState } from "react";
 import Link from "next/link";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import type { ConnectionResult } from "@/lib/types";
 import GraphView from "@/components/GraphView";
-import PersonPicker, { type PickerItem } from "@/components/PersonPicker";
+import AsyncPicker, { type PickerItem } from "@/components/AsyncPicker";
 import ErrorState from "@/components/ErrorState";
 import { Spinner } from "@/components/Skeleton";
 
@@ -56,192 +62,205 @@ export default function ConnectExplorer({
 
   return (
     <div className="fade-up pt-10">
-      <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+      <span className="inline-block border-2 border-[#0B0B0B] bg-[#FF4D6D] px-2.5 py-1 text-xs font-black uppercase tracking-[0.2em] text-white shadow-[3px_3px_0_#0B0B0B]">
+        The flagship query
+      </span>
+      <Typography variant="h1" component="h1" sx={{ mt: 2 }}>
         Connection explorer
-      </h1>
-      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+      </Typography>
+      <Typography sx={{ mt: 2, maxWidth: 620, fontWeight: 600 }}>
         Pick any two people (or films) and CineGraph will ask the database for
-        the <em className="text-foreground">shortest path</em> between them — a
-        variable-length graph traversal that a relational database would
-        struggle to express.
-      </p>
+        the <strong>shortest path</strong> between them — a variable-length graph
+        traversal that a relational database would struggle to express.
+      </Typography>
 
-      <div className="mt-6 flex flex-wrap items-end gap-3">
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted">
+      <Box
+        sx={{
+          mt: 5,
+          p: { xs: 2, sm: 3 },
+          border: "2px solid #0B0B0B",
+          bgcolor: "#FFFFFF",
+          boxShadow: "6px 6px 0 #0B0B0B",
+          display: "flex",
+          flexDirection: { xs: "column", lg: "row" },
+          alignItems: { lg: "flex-end" },
+          gap: 2,
+        }}
+      >
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          <Typography variant="caption" sx={{ fontWeight: 800, textTransform: "uppercase" }}>
             Connecting
-          </span>
-          <div className="flex overflow-hidden rounded-lg border border-edge">
-            <button
-              type="button"
-              onClick={() => setKind("person")}
-              className={`px-3.5 py-2 text-xs font-semibold transition-colors ${
-                kind === "person"
-                  ? "bg-accent text-black"
-                  : "bg-surface text-muted hover:text-foreground"
-              }`}
-            >
-              People
-            </button>
-            <button
-              type="button"
-              onClick={() => setKind("movie")}
-              className={`px-3.5 py-2 text-xs font-semibold transition-colors ${
-                kind === "movie"
-                  ? "bg-accent text-black"
-                  : "bg-surface text-muted hover:text-foreground"
-              }`}
-            >
-              Films
-            </button>
-          </div>
-        </div>
+          </Typography>
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            value={kind}
+            onChange={(_event, next) => next && setKind(next)}
+          >
+            <ToggleButton value="person">People</ToggleButton>
+            <ToggleButton value="movie">Films</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
 
-        <div className="w-52 sm:w-64">
-          <PersonPicker
+        <Box sx={{ flex: 1, minWidth: { lg: 220 } }}>
+          <AsyncPicker
             kind={kind}
             value={from}
             onChange={setFrom}
             placeholder={kind === "person" ? "First person…" : "First film…"}
             excludeId={to?.id}
           />
-        </div>
+        </Box>
 
-        <span className="pb-2.5 text-muted">↔</span>
+        <Typography variant="h5" sx={{ lineHeight: 1, px: 1, pb: 0.5 }}>
+          ↔
+        </Typography>
 
-        <div className="w-52 sm:w-64">
-          <PersonPicker
+        <Box sx={{ flex: 1, minWidth: { lg: 220 } }}>
+          <AsyncPicker
             kind={kind}
             value={to}
             onChange={setTo}
             placeholder={kind === "person" ? "Second person…" : "Second film…"}
             excludeId={from?.id}
           />
-        </div>
+        </Box>
 
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted">
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          <Typography variant="caption" sx={{ fontWeight: 800, textTransform: "uppercase" }}>
             Max hops
-          </span>
-          <div className="flex overflow-hidden rounded-lg border border-edge">
+          </Typography>
+          <ButtonGroup size="small" variant="outlined">
             {[2, 4, 6, 8].map((hops) => (
-              <button
+              <Button
                 key={hops}
-                type="button"
                 onClick={() => setMaxHops(hops)}
-                className={`px-3 py-2 text-xs font-semibold transition-colors ${
-                  maxHops === hops
-                    ? "bg-accent text-black"
-                    : "bg-surface text-muted hover:text-foreground"
-                }`}
+                sx={{
+                  bgcolor: maxHops === hops ? "#FFE600" : "#FFFFFF",
+                  boxShadow: maxHops === hops ? "3px 3px 0 #0B0B0B" : "none",
+                  borderWidth: "2px",
+                }}
               >
                 {hops}
-              </button>
+              </Button>
             ))}
-          </div>
-        </div>
+          </ButtonGroup>
+        </Box>
 
-        <button
-          type="button"
+        <Button
+          variant="contained"
+          color="secondary"
           onClick={run}
           disabled={!from || !to || status === "loading"}
-          className="rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-40"
+          sx={{ px: 4, py: 1.5 }}
         >
-          Find the path
-        </button>
-      </div>
+          Find the path ⏎
+        </Button>
+      </Box>
 
       {status === "loading" && (
-        <div className="mt-8">
+        <Box sx={{ mt: 8 }}>
           <Spinner label="Walking the graph…" />
-        </div>
+        </Box>
       )}
 
       {status === "error" && (
-        <div className="mt-8">
+        <Box sx={{ mt: 8 }}>
           <ErrorState message={errorMessage} onRetry={run} />
-        </div>
+        </Box>
       )}
 
       {status === "ready" && result && (
-        <div className="mt-8 space-y-8">
+        <Box sx={{ mt: 8 }}>
           {result.found ? (
-            <>
-              <section>
-                <h2 className="mb-1 text-lg font-semibold">
-                  Connected in {result.depth / 2} step
-                  {result.depth / 2 === 1 ? "" : "s"}
-                  <span className="text-xs font-normal text-muted">
-                    {" "}
-                    · {result.depth} relationship{result.depth === 1 ? "" : "s"} in the graph
-                  </span>
-                </h2>
-                <p className="mb-4 text-xs text-muted">
-                  This is the answer to{" "}
-                  <code className="rounded bg-surface2 px-1.5 py-0.5 font-mono text-[11px]">
-                    MATCH p = shortestPath(…) RETURN p
-                  </code>{" "}
-                  — no SQL joins, no recursion. Click any node to keep exploring.
-                </p>
-                <GraphView data={result.graph} startId={result.fromId} />
-              </section>
+            <Box>
+              <Box
+                className="mb-5 flex items-center gap-3"
+                sx={{ borderBottom: "3px solid #0B0B0B", pb: 1 }}
+              >
+                <span className="border-2 border-[#0B0B0B] bg-[#3DDC97] px-2.5 py-1 text-xs font-black uppercase shadow-[3px_3px_0_#0B0B0B]">
+                  Connected
+                </span>
+                <Typography variant="h5" component="h2">
+                  {result.depth / 2} step{result.depth / 2 === 1 ? "" : "s"} ·{" "}
+                  {result.depth} relationship{result.depth === 1 ? "" : "s"} in
+                  the graph
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ mb: 3, fontWeight: 600 }}>
+                This is the answer to{" "}
+                <code className="border-[1.5px] border-[#0B0B0B] bg-[#FFF8E7] px-1.5 py-0.5 text-xs">
+                  MATCH p = shortestPath(…) RETURN p
+                </code>{" "}
+                — no SQL joins, no recursion. Click any node to keep exploring.
+              </Typography>
+              <GraphView data={result.graph} startId={result.fromId} />
 
-              <section>
-                <h2 className="mb-3 text-lg font-semibold">Step by step</h2>
-                <ol className="space-y-0">
+              <Box className="mt-10 max-w-2xl">
+                <Typography variant="h5" component="h3" sx={{ mb: 3 }}>
+                  Step by step
+                </Typography>
+                <Box component="ol" sx={{ p: 0, m: 0, listStyle: "none" }}>
                   {result.steps.map((step, index) => (
-                    <li key={index} className="flex gap-3">
-                      <span className="flex flex-col items-center">
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/15 text-[11px] font-bold text-accent">
+                    <Box component="li" key={index} sx={{ display: "flex", gap: 2 }}>
+                      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <span className="grid h-7 w-7 shrink-0 place-items-center border-2 border-[#0B0B0B] bg-[#FFE600] text-xs font-black shadow-[2px_2px_0_#0B0B0B]">
                           {index + 1}
                         </span>
                         {index < result.steps.length - 1 && (
-                          <span className="w-px flex-1 bg-edge" />
+                          <span className="w-0.5 flex-1 bg-[#0B0B0B]" />
                         )}
-                      </span>
-                      <p className="pb-5 text-sm leading-relaxed">
-                        <Link
-                          href={`/${step.fromKind === "person" ? "person" : "movie"}/${step.fromId}`}
-                          className="font-semibold text-accent hover:underline"
-                        >
-                          {step.from}
-                        </Link>
-                        {" → "}
-                        <Link
-                          href={`/${step.viaKind === "person" ? "person" : "movie"}/${step.viaId}`}
-                          className="font-semibold hover:underline"
-                        >
-                          {step.via}
-                        </Link>
-                        {" → "}
-                        <Link
-                          href={`/${step.toKind === "person" ? "person" : "movie"}/${step.toId}`}
-                          className="font-semibold text-accent hover:underline"
-                        >
-                          {step.to}
-                        </Link>
-                        <span className="block text-xs text-muted">
+                      </Box>
+                      <Box sx={{ pb: 4 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 800 }}>
+                          <Link
+                            href={`/${step.fromKind === "person" ? "person" : "movie"}/${step.fromId}`}
+                            className="underline decoration-[#FF4D6D] decoration-2 underline-offset-2 hover:decoration-[#0B0B0B]"
+                          >
+                            {step.from}
+                          </Link>
+                          {" → "}
+                          <Link
+                            href={`/${step.viaKind === "person" ? "person" : "movie"}/${step.viaId}`}
+                            className="underline decoration-[#4D7CFE] decoration-2 underline-offset-2 hover:decoration-[#0B0B0B]"
+                          >
+                            {step.via}
+                          </Link>
+                          {" → "}
+                          <Link
+                            href={`/${step.toKind === "person" ? "person" : "movie"}/${step.toId}`}
+                            className="underline decoration-[#FF4D6D] decoration-2 underline-offset-2 hover:decoration-[#0B0B0B]"
+                          >
+                            {step.to}
+                          </Link>
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: "#6B6B6B", fontWeight: 600 }}>
                           {step.detail}
-                        </span>
-                      </p>
-                    </li>
+                        </Typography>
+                      </Box>
+                    </Box>
                   ))}
-                </ol>
-              </section>
-            </>
+                </Box>
+              </Box>
+            </Box>
           ) : (
-            <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-edge bg-surface/50 px-6 py-12 text-center">
-              <span className="text-2xl">🕸️</span>
-              <p className="text-sm font-semibold">
+            <Box
+              className="flex flex-col items-center gap-2 px-6 py-12 text-center"
+              sx={{ border: "3px dashed #0B0B0B", bgcolor: "#FFFFFF" }}
+            >
+              <span className="grid h-14 w-14 place-items-center border-2 border-[#0B0B0B] bg-[#FF9F1C] text-2xl shadow-[3px_3px_0_#0B0B0B]">
+                🕸️
+              </span>
+              <Typography variant="h6" component="p">
                 No connection found within {maxHops} hops
-              </p>
-              <p className="max-w-sm text-xs text-muted">
+              </Typography>
+              <Typography variant="body2" sx={{ maxWidth: 420, color: "#6B6B6B", fontWeight: 600 }}>
                 That’s a real answer too — the graph proved there is no path of
-                that length. Try a deeper search (6 hops) or a different pair.
-              </p>
-            </div>
+                that length. Try a deeper search (8 hops) or a different pair.
+              </Typography>
+            </Box>
           )}
-        </div>
+        </Box>
       )}
     </div>
   );

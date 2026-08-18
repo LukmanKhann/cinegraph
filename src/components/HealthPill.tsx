@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Box from "@mui/material/Box";
 
 type Health = "checking" | "ok" | "down";
 
@@ -23,29 +24,35 @@ export default function HealthPill() {
     };
   }, []);
 
-  if (health === "checking") {
-    return (
-      <span className="inline-flex items-center gap-1.5 pulse-soft">
-        <span className="h-1.5 w-1.5 rounded-full bg-muted" />
-        graph …
-      </span>
-    );
-  }
+  const color = health === "ok" ? "#3DDC97" : health === "down" ? "#FF4D6D" : "#6B6B6B";
+
   return (
-    <span
-      className="inline-flex items-center gap-1.5"
+    <Box
+      component="span"
+      className="inline-flex items-center gap-1.5 border-2 border-[#0B0B0B] bg-[#FFFFFF] px-2 py-0.5 shadow-[2px_2px_0_#0B0B0B]"
       title={
         health === "ok"
           ? "Connected to the live CognoDB graph"
           : "Graph database unreachable"
       }
     >
-      <span
-        className={`h-1.5 w-1.5 rounded-full ${
-          health === "ok" ? "bg-emerald-400" : "bg-danger"
-        }`}
+      <Box
+        component="span"
+        sx={{
+          width: 9,
+          height: 9,
+          bgcolor: color,
+          border: "1.5px solid #0B0B0B",
+          animation: health === "checking" ? "pulse-soft 1.2s infinite" : "none",
+          "@keyframes pulse-soft": {
+            "0%,100%": { opacity: 1 },
+            "50%": { opacity: 0.35 },
+          },
+        }}
       />
-      {health === "ok" ? "graph online" : "graph offline"}
-    </span>
+      <span className="text-[11px] font-bold uppercase tracking-wide">
+        {health === "checking" ? "graph …" : health === "ok" ? "graph online" : "graph offline"}
+      </span>
+    </Box>
   );
 }

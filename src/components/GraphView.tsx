@@ -59,6 +59,10 @@ function layout(data: GraphData, startId: string): Map<string, Position> {
   return positions;
 }
 
+const BLACK = "#0B0B0B";
+const YELLOW = "#FFE600";
+const BLUE = "#4D7CFE";
+
 function truncate(label: string, max = 18): string {
   return label.length > max ? `${label.slice(0, max - 1)}…` : label;
 }
@@ -113,7 +117,7 @@ export default function GraphView({
   return (
     <svg
       viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-      className="w-full rounded-xl border border-edge bg-surface"
+      className="w-full border-2 border-[#0B0B0B] bg-[#FFF8E7] shadow-[5px_5px_0_#0B0B0B]"
       role="img"
       aria-label="Graph visualisation of connections"
     >
@@ -127,7 +131,7 @@ export default function GraphView({
           markerHeight="7"
           orient="auto-start-reverse"
         >
-          <path d="M 0 1 L 9 5 L 0 9 z" fill="#4a5470" />
+          <path d="M 0 1 L 9 5 L 0 9 z" fill="#0B0B0B" />
         </marker>
       </defs>
 
@@ -139,8 +143,9 @@ export default function GraphView({
             key={`${link.source}-${link.target}-${index}`}
             d={path.d}
             fill="none"
-            stroke="#4a5470"
-            strokeWidth={1.4}
+            stroke="#0B0B0B"
+            strokeWidth={2}
+            strokeLinecap="round"
             markerEnd="url(#arrow)"
           >
             <title>
@@ -169,9 +174,10 @@ export default function GraphView({
             {isPerson ? (
               <circle
                 r={19}
-                fill="#1c2130"
-                stroke={endpoint ? "#f5b942" : "#8a94b5"}
-                strokeWidth={endpoint ? 2.5 : 1.5}
+                fill={YELLOW}
+                stroke={BLACK}
+                strokeWidth={2.5}
+                style={{ filter: "drop-shadow(2px 2px 0 #0B0B0B)" }}
               />
             ) : (
               <rect
@@ -179,28 +185,35 @@ export default function GraphView({
                 y={-16}
                 width={116}
                 height={32}
-                rx={9}
-                fill="#232a3d"
-                stroke={endpoint ? "#f5b942" : "#5b6b8c"}
-                strokeWidth={endpoint ? 2.5 : 1.5}
+                rx={2}
+                fill={BLUE}
+                stroke={BLACK}
+                strokeWidth={2.5}
+                style={{ filter: "drop-shadow(2px 2px 0 #0B0B0B)" }}
               />
             )}
             <text
               textAnchor="middle"
               y={isPerson ? 5 : 4}
               fontSize={isPerson ? 13 : 11}
-              fontWeight={isPerson ? 700 : 600}
-              fill={isPerson ? "#f5b942" : "#e8e9ee"}
+              fontWeight={800}
+              fill={isPerson ? BLACK : "#FFFFFF"}
             >
               {isPerson ? node.label.split(" ")[0] : truncate(node.label, 17)}
             </text>
             {!isPerson && (
-              <text textAnchor="middle" y={24} fontSize={9} fill="#98a0b3">
+              <text textAnchor="middle" y={24} fontSize={9} fontWeight={700} fill={BLACK}>
                 {node.year ?? ""}
               </text>
             )}
             {endpoint && (
-              <circle r={25} fill="none" stroke="#f5b942" strokeOpacity={0.35} strokeWidth={1} />
+              <circle
+                r={25}
+                fill="none"
+                stroke={BLACK}
+                strokeWidth={2}
+                strokeDasharray="4 3"
+              />
             )}
           </g>
         );

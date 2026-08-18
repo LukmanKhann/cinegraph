@@ -2,6 +2,10 @@
 
 import { use, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
+import Skeleton from "@mui/material/Skeleton";
 import type { GraphData, MovieDetail, Recommendation } from "@/lib/types";
 import ErrorState from "@/components/ErrorState";
 import EmptyState from "@/components/EmptyState";
@@ -19,6 +23,16 @@ function formatRuntime(minutes: number | null): string | null {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <Box className="mb-4 flex items-center" sx={{ borderBottom: "3px solid #0B0B0B", pb: 1 }}>
+      <Typography variant="h5" component="h2">
+        {children}
+      </Typography>
+    </Box>
+  );
 }
 
 export default function MoviePage({
@@ -55,13 +69,13 @@ export default function MoviePage({
 
   if (status === "loading") {
     return (
-      <div className="pt-10">
-        <div className="h-40 animate-pulse rounded-2xl bg-surface2" />
-        <div className="mt-6 h-5 w-1/2 animate-pulse rounded bg-surface2" />
-        <div className="mt-3 h-4 w-2/3 animate-pulse rounded bg-surface2" />
-        <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="pt-10 space-y-6">
+        <Skeleton variant="rectangular" height={180} sx={{ border: "2px solid #0B0B0B", boxShadow: "5px 5px 0 #0B0B0B" }} />
+        <Skeleton variant="text" width="50%" sx={{ fontSize: "2rem" }} />
+        <Skeleton variant="text" width="70%" sx={{ fontSize: "1rem" }} />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="h-40 animate-pulse rounded-xl bg-surface2" />
+            <Skeleton key={index} variant="rectangular" height={150} sx={{ border: "2px solid #0B0B0B" }} />
           ))}
         </div>
       </div>
@@ -94,63 +108,75 @@ export default function MoviePage({
   }
 
   const { movie, recommendations, network } = data;
+  const [gradientFrom, gradientTo] = gradientFor(movie.id);
 
   return (
     <div className="fade-up pt-6">
-      <section
-        className={`relative overflow-hidden rounded-2xl border border-edge bg-gradient-to-br ${gradientFor(movie.id)}`}
+      <Box
+        className="relative overflow-hidden px-6 py-10 sm:px-10 sm:py-14"
+        sx={{
+          border: "2px solid #0B0B0B",
+          boxShadow: "7px 7px 0 #0B0B0B",
+          background: `linear-gradient(135deg, ${gradientFrom} 0%, ${gradientTo} 100%)`,
+        }}
       >
-        <div className="px-6 py-10 sm:px-10 sm:py-14">
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            {movie.genres.map((genre) => (
-              <span
-                key={genre}
-                className="rounded-full border border-white/25 bg-black/25 px-2.5 py-1 text-white/90"
-              >
-                {genre}
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+          {movie.genres.map((genre) => (
+            <Chip
+              key={genre}
+              label={genre}
+              size="small"
+              sx={{
+                bgcolor: "#0B0B0B",
+                color: "#FFFFFF",
+                border: "2px solid #0B0B0B",
+                fontWeight: 800,
+                textTransform: "uppercase",
+                "&:hover": { boxShadow: "none" },
+              }}
+            />
+          ))}
+        </Box>
+        <Typography
+          variant="h2"
+          component="h1"
+          sx={{ mt: 3, maxWidth: 760, fontSize: { xs: "1.8rem", sm: "2.6rem" } }}
+        >
+          {movie.title}
+        </Typography>
+        <Typography variant="body1" sx={{ mt: 2, fontStyle: "italic", fontWeight: 700, maxWidth: 620 }}>
+          “{movie.tagline}”
+        </Typography>
+        <Typography variant="body1" sx={{ mt: 1.5, fontWeight: 800 }}>
+          {movie.year} · {formatRuntime(movie.runtimeMinutes) ?? "—"}
+        </Typography>
+        {movie.directors.length > 0 && (
+          <Typography variant="body1" sx={{ mt: 0.5, fontWeight: 800 }}>
+            Directed by{" "}
+            {movie.directors.map((director, index) => (
+              <span key={director.id}>
+                {index > 0 && ", "}
+                <Link href={`/person/${director.id}`} className="underline decoration-black/50 decoration-2 underline-offset-2 hover:decoration-black">
+                  {director.name}
+                </Link>
               </span>
             ))}
-          </div>
-          <h1 className="mt-4 max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">
-            {movie.title}
-          </h1>
-          <p className="mt-3 max-w-xl text-sm italic text-white/80">
-            “{movie.tagline}”
-          </p>
-          <p className="mt-3 text-sm text-white/70">
-            {movie.year} · {formatRuntime(movie.runtimeMinutes) ?? "—"}
-          </p>
-          {movie.directors.length > 0 && (
-            <p className="mt-1 text-sm text-white/80">
-              Directed by{" "}
-              {movie.directors.map((director, index) => (
-                <span key={director.id}>
-                  {index > 0 && ", "}
-                  <Link
-                    href={`/person/${director.id}`}
-                    className="font-semibold underline decoration-white/40 underline-offset-2 hover:decoration-white"
-                  >
-                    {director.name}
-                  </Link>
-                </span>
-              ))}
-            </p>
-          )}
-        </div>
-      </section>
+          </Typography>
+        )}
+      </Box>
 
-      <section className="mt-8">
-        <h2 className="mb-4 text-lg font-semibold">
-          Cast <span className="text-muted">· {movie.cast.length} actors</span>
-        </h2>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <section className="mt-10">
+        <SectionHeading>
+          Cast <span className="text-sm text-[#6B6B6B]">· {movie.cast.length} actors</span>
+        </SectionHeading>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {movie.cast.map((member) => (
             <Link
               key={member.id}
               href={`/person/${member.id}`}
-              className="group flex items-center gap-3 rounded-xl border border-edge bg-surface p-3 transition-colors hover:border-accent/60"
+              className="group flex items-center gap-3 border-2 border-[#0B0B0B] bg-[#FFFFFF] p-3 shadow-[3px_3px_0_#0B0B0B] transition-transform hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#0B0B0B]"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface2 text-xs font-bold text-accent">
+              <span className="grid h-9 w-9 shrink-0 place-items-center border-2 border-[#0B0B0B] bg-[#B983FF] text-xs font-black shadow-[2px_2px_0_#0B0B0B]">
                 {member.name
                   .split(" ")
                   .slice(0, 2)
@@ -158,11 +184,11 @@ export default function MoviePage({
                   .join("")}
               </span>
               <span className="min-w-0">
-                <span className="block truncate text-sm font-semibold group-hover:text-accent">
+                <span className="block truncate text-sm font-extrabold group-hover:underline group-hover:decoration-[#FF4D6D] group-hover:decoration-2">
                   {member.name}
                 </span>
                 {member.role && (
-                  <span className="block truncate text-xs text-muted">
+                  <span className="block truncate text-xs font-semibold text-[#6B6B6B]">
                     as {member.role}
                   </span>
                 )}
@@ -174,26 +200,22 @@ export default function MoviePage({
 
       {recommendations.length > 0 && (
         <section className="mt-10">
-          <h2 className="mb-1 text-lg font-semibold">
-            You might also like{" "}
-            <span className="text-xs font-normal text-muted">
-              — found by walking the graph
-            </span>
-          </h2>
-          <p className="mb-4 text-xs text-muted">
-            Every suggestion shares at least one cast member or genre with{" "}
-            {movie.title}: a two-hop traversal from this movie’s node.
-          </p>
+          <SectionHeading>You might also like</SectionHeading>
+          <Typography variant="body2" sx={{ mb: 3, fontWeight: 600, maxWidth: 640 }}>
+            Found by walking the graph: every suggestion shares at least one cast
+            member or genre with {movie.title} — a two-hop traversal from this
+            movie’s node.
+          </Typography>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {recommendations.map(({ movie: other, sharedActors, sharedGenres }) => (
               <div key={other.id} className="relative">
                 <MovieCard movie={other} />
-                <span className="absolute -top-2 right-2 rounded-full bg-surface2 px-2 py-0.5 text-[10px] text-muted">
+                <span className="absolute -top-2 right-2 border-2 border-[#0B0B0B] bg-[#FF9F1C] px-1.5 py-0.5 text-[10px] font-black uppercase shadow-[2px_2px_0_#0B0B0B]">
                   {sharedActors > 0 && sharedGenres > 0
-                    ? `👥 ${sharedActors} shared · 🏷 ${sharedGenres}`
+                    ? `👥 ${sharedActors} · 🏷 ${sharedGenres}`
                     : sharedActors > 0
-                      ? `👥 ${sharedActors} shared actor${sharedActors > 1 ? "s" : ""}`
-                      : `🏷 shared genre${sharedGenres > 1 ? "s" : ""}`}
+                      ? `👥 ${sharedActors} shared`
+                      : `🏷 shared genre`}
                 </span>
               </div>
             ))}
@@ -202,16 +224,11 @@ export default function MoviePage({
       )}
 
       <section className="mt-10">
-        <h2 className="mb-1 text-lg font-semibold">
-          Cast network{" "}
-          <span className="text-xs font-normal text-muted">
-            — who else have they worked with?
-          </span>
-        </h2>
-        <p className="mb-4 text-xs text-muted">
+        <SectionHeading>Cast network</SectionHeading>
+        <Typography variant="body2" sx={{ mb: 3, fontWeight: 600, maxWidth: 640 }}>
           {movie.title} in the middle, its cast around it, and the other films
           each cast member has appeared in on the outside. Click any node.
-        </p>
+        </Typography>
         <GraphView data={network} startId={movie.id} />
       </section>
     </div>
