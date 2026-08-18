@@ -268,6 +268,16 @@ npm run build      # production build
 
 ---
 
+## Branding assets (maintained link reference)
+
+- **Browser favicon** — `src/app/icon.png`, served at `/icon.png` (source: `assets/logo_icon.png`). Overrides the framework default; no code changes needed to swap — just replace the file.
+- **Link-preview card (Open Graph / Twitter)** — `src/app/opengraph-image.png` (1200×630, branded with the logo), auto-served at `/opengraph-image.png` and picked up by social/link previews (WhatsApp, Slack, LinkedIn…). Replace the file to update the preview — no code changes needed.
+- **Navbar logo** — inline in `src/components/Nav.tsx` (the "C" badge); swap the `<span>` for an `<Image>` if you want the PNG in the header too.
+
+Keep these three assets in sync whenever the logo changes.
+
+---
+
 ## requirements checklist
 
 - [x] Real graph database app on CognoDB (openCypher over Bolt, official driver)
