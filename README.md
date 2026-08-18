@@ -254,11 +254,17 @@ npm run build      # production build
 
 ## Screenshots
 
-*(replace with your own)*
-
-| Home / search | Connection path |
+| Home / search | Movie page (cast network + recommendations) |
 | --- | --- |
-| `screenshots/home.png` | `screenshots/path.png` |
+| `screenshots/home_page_1.png` | `screenshots/movie_1.png` |
+
+| Connection explorer | Shortest path (Keanu Reeves → Tom Hanks) |
+| --- | --- |
+| `screenshots/connection_explorer.png` | `screenshots/relationship_graph_1.png` |
+
+| Cast network close-up |
+| --- |
+| `screenshots/cast_network.png` |
 
 ---
 
