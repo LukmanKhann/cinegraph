@@ -7,20 +7,19 @@ export default function mount() {
   const root = createRoot(container);
   let done: () => void;
   const pending = new Promise<void>((resolve) => (done = resolve));
-  void root;
   act(() => {
-root.render(
-    React.createElement(AsyncPicker, {
-      kind: "movie",
-      placeholder: "Try “The Matrix”, “Inception”, “Toy Story”…",
-    }),
-  );
+    root.render(
+      React.createElement(AsyncPicker, {
+        kind: "movie",
+        placeholder: "Try “The Matrix”, “Inception”, “Toy Story”…",
+      }),
+    );
     done();
   });
-  return { root, pending };
+  return pending;
 }
 
-export async function typeInto(root: ReturnType<typeof createRoot>) {
+export async function typeInto() {
   const input = document.querySelector("input") as HTMLInputElement;
   if (!input) throw new Error("no input found");
   await act(async () => {
@@ -34,7 +33,7 @@ export async function typeInto(root: ReturnType<typeof createRoot>) {
       new window.Event("input", { bubbles: true, composed: true }),
     );
   });
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+  await new Promise((resolve) => setTimeout(resolve, 4000));
   await act(async () => {});
-  return document.body.innerHTML;
+  return document.querySelectorAll('[role="option"]').length;
 }

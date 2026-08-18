@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated repro bundle (esbuild output, rebuilt on demand):
+    "scripts/repro-bundle.mjs",
   ]),
 ]);
 

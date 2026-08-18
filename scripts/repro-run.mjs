@@ -15,8 +15,12 @@ globalThis.Node = dom.window.Node;
 globalThis.localStorage = dom.window.localStorage;
 globalThis.getComputedStyle = dom.window.getComputedStyle;
 globalThis.MutationObserver = dom.window.MutationObserver;
-globalThis.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 16);
+globalThis.requestAnimationFrame = (cb) =>
+  setTimeout(() => cb(performance.now()), 16);
 globalThis.cancelAnimationFrame = (id) => clearTimeout(id);
+
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
 const nativeFetch = globalThis.fetch;
 globalThis.fetch = async (url, init) => {
   const absolute = new URL(url, "http://localhost:3000");
@@ -28,15 +32,13 @@ globalThis.fetch = async (url, init) => {
 dom.window.fetch = globalThis.fetch;
 
 const mod = await import("./repro-bundle.mjs");
-console.log("module keys:", Object.keys(mod));
 const mount = mod.default;
 const typeInto = mod.typeInto;
+
 const origConsoleError = console.error;
-console.error = (...args) => { origConsoleError("CONSOLE.ERROR:", ...args); };
-const { root, pending } = mount();
-await pending;
-console.log("HAS INPUT:", !!document.querySelector("input"));
-console.log("BODY HTML:", document.body.innerHTML.slice(0, 2000));
+console.error = (...args) => {
+  origConsoleError("CONSOLE.ERROR:", ...args);
+};
 
 process.on("uncaughtException", (err) => {
   console.log("UNCAUGHT:", err.message);
@@ -47,16 +49,19 @@ process.on("uncaughtException", (err) => {
 window.addEventListener("error", (event) => {
   const err = event.error || { message: event.message };
   console.log("WINDOW ERROR:", err.message);
-  if (err.stack) console.log(String(err.stack).split("\n").slice(0, 10).join("\n"));
+  if (err.stack) {
+    console.log(String(err.stack).split("\n").slice(0, 10).join("\n"));
+  }
   process.exit(3);
 });
 
-typeInto(root)
-  .then(() => {
-    console.log(
-      "TYPED OK — options in DOM:",
-      document.querySelectorAll('[role="option"]').length,
-    );
+const pending = mount();
+await pending;
+console.log("HAS INPUT:", !!document.querySelector("input"));
+
+typeInto()
+  .then((count) => {
+    console.log("TYPED OK — options in DOM:", count);
     process.exit(0);
   })
   .catch((err) => {
