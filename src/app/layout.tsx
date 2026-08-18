@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import EmotionRegistry from "./registry";
 import Providers from "./providers";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
@@ -30,14 +31,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <Providers>
-          <Nav />
-          <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pb-20">
-            {children}
-          </main>
-          <Footer />
-        </Providers>
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        <EmotionRegistry>
+          <Providers>
+            <Nav />
+            <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pb-20">
+              {children}
+            </main>
+            <Footer />
+          </Providers>
+        </EmotionRegistry>
       </body>
     </html>
   );
