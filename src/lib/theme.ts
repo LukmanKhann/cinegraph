@@ -1,6 +1,6 @@
 "use client";
 
-import { createTheme } from "@mui/material/styles";
+import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 import { createContext } from "react";
 
 export interface ThemeMode {
@@ -36,7 +36,7 @@ const hardShadowSmall = `3px 3px 0 var(--cg-shadow)`;
 export function buildTheme(mode: "light" | "dark") {
   const dark = mode === "dark";
   const paper = dark ? "#2b2118" : "#fbf6ec";
-  return createTheme({
+  const theme = createTheme({
     palette: {
       mode,
       primary: { main: dark ? "#8a6a45" : "#6b4a2f", contrastText: paper },
@@ -57,8 +57,16 @@ export function buildTheme(mode: "light" | "dark") {
   typography: {
     fontFamily:
       "Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    h1: { fontWeight: 900, letterSpacing: "-0.03em" },
-    h2: { fontWeight: 900, letterSpacing: "-0.02em" },
+        h1: {
+      fontWeight: 900,
+      letterSpacing: "-0.03em",
+      overflowWrap: "break-word",
+    },
+    h2: {
+      fontWeight: 900,
+      letterSpacing: "-0.02em",
+      overflowWrap: "break-word",
+    },
     h3: { fontWeight: 900, letterSpacing: "-0.02em" },
     h4: { fontWeight: 900, letterSpacing: "-0.01em" },
     h5: { fontWeight: 800 },
@@ -199,4 +207,5 @@ export function buildTheme(mode: "light" | "dark") {
     },
   },
   });
+  return responsiveFontSizes(theme);
 }

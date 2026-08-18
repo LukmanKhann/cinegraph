@@ -87,7 +87,7 @@ export default function ConnectExplorer({
           gap: 2,
         }}
       >
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minWidth: 0 }}>
           <Typography variant="caption" sx={{ fontWeight: 800, textTransform: "uppercase" }}>
             Connecting
           </Typography>
@@ -102,7 +102,7 @@ export default function ConnectExplorer({
           </ToggleButtonGroup>
         </Box>
 
-        <Box sx={{ flex: 1, minWidth: { lg: 220 } }}>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
           <AsyncPicker
             kind={kind}
             value={from}
@@ -116,7 +116,7 @@ export default function ConnectExplorer({
           ↔
         </Typography>
 
-        <Box sx={{ flex: 1, minWidth: { lg: 220 } }}>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
           <AsyncPicker
             kind={kind}
             value={to}
@@ -126,7 +126,7 @@ export default function ConnectExplorer({
           />
         </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minWidth: 0 }}>
           <Typography variant="caption" sx={{ fontWeight: 800, textTransform: "uppercase" }}>
             Max hops
           </Typography>
