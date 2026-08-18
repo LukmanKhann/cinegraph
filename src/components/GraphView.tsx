@@ -6,11 +6,9 @@ import type { GraphData, GraphNode } from "@/lib/types";
 
 const WIDTH = 1000;
 const PAD_X = 60;
-const NODE_SPACING = 58;
+const NODE_SPACING = 64;
 
-const BLACK = "#0B0B0B";
-const YELLOW = "#FFE600";
-const BLUE = "#4D7CFE";
+const INK = "var(--cg-ink)";
 
 interface Position {
   x: number;
@@ -115,7 +113,7 @@ function layout(data: GraphData, startId: string): LayoutResult {
     });
   }
 
-  const height = Math.max(400, maxCount * NODE_SPACING + NODE_SPACING * 2);
+  const height = Math.max(440, maxCount * NODE_SPACING + NODE_SPACING * 2);
   for (const [id, pos] of positions) {
     positions.set(id, { x: pos.x, y: pos.y + height / 2 });
   }
@@ -175,7 +173,7 @@ export default function GraphView({
     node.id === startId || node.id === endId;
 
   return (
-    <div className="w-full border-2 border-[#0B0B0B] bg-[#FFF8E7] shadow-[5px_5px_0_#0B0B0B]">
+    <div className="w-full border-2 border-[var(--cg-ink)] bg-[var(--cg-bg)] shadow-[5px_5px_0_var(--cg-shadow)]">
       <svg
         viewBox={`0 0 ${WIDTH} ${height}`}
         className="block h-auto w-full"
@@ -192,7 +190,7 @@ export default function GraphView({
             markerHeight="7"
             orient="auto-start-reverse"
           >
-            <path d="M 0 1 L 9 5 L 0 9 z" fill="#0B0B0B" />
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--cg-ink)" />
           </marker>
         </defs>
 
@@ -204,7 +202,7 @@ export default function GraphView({
               key={`${link.source}-${link.target}-${index}`}
               d={path.d}
               fill="none"
-              stroke="#0B0B0B"
+              stroke="var(--cg-ink)"
               strokeWidth={2}
               strokeLinecap="round"
               markerEnd="url(#arrow)"
@@ -234,66 +232,74 @@ export default function GraphView({
               </title>
               {isPerson ? (
                 <circle
-                  r={19}
-                  fill={YELLOW}
-                  stroke={BLACK}
+                  r={22}
+                  fill="var(--cg-light)"
+                  stroke={INK}
                   strokeWidth={2.5}
-                  style={{ filter: "drop-shadow(2px 2px 0 #0B0B0B)" }}
+                  style={{ filter: "drop-shadow(2px 2px 0 var(--cg-shadow))" }}
                 />
               ) : (
                 <rect
-                  x={-58}
-                  y={-16}
-                  width={116}
-                  height={32}
+                  x={-62}
+                  y={-19}
+                  width={124}
+                  height={38}
                   rx={2}
-                  fill={BLUE}
-                  stroke={BLACK}
+                  fill="var(--cg-dark)"
+                  stroke={INK}
                   strokeWidth={2.5}
-                  style={{ filter: "drop-shadow(2px 2px 0 #0B0B0B)" }}
+                  style={{ filter: "drop-shadow(2px 2px 0 var(--cg-shadow))" }}
                 />
               )}
               <text
                 textAnchor="middle"
-                y={isPerson ? 5 : 4}
-                fontSize={isPerson ? 13 : 11}
+                y={isPerson ? 3 : -3}
+                fontSize={isPerson ? 12 : 10.5}
                 fontWeight={800}
-                fill={isPerson ? BLACK : "#FFFFFF"}
+                fill={isPerson ? "var(--cg-ink)" : "var(--cg-paper)"}
               >
-                {isPerson ? node.label.split(" ")[0] : truncate(node.label, 17)}
+                {isPerson
+                  ? truncate(node.label.split(" ")[0], 10)
+                  : truncate(node.label, 16)}
               </text>
               {!isPerson && (
-                <text textAnchor="middle" y={24} fontSize={9} fontWeight={700} fill={BLACK}>
+                <text
+                  textAnchor="middle"
+                  y={14}
+                  fontSize={9}
+                  fontWeight={700}
+                  fill="var(--cg-paper)"
+                >
                   {node.year ?? ""}
                 </text>
               )}
               {endpoint && (
                 <circle
-                  r={25}
+                  r={29}
                   fill="none"
-                  stroke={BLACK}
-                  strokeWidth={2}
-                  strokeDasharray="4 3"
+                  stroke="var(--cg-secondary)"
+                  strokeWidth={2.5}
+                  strokeDasharray="5 4"
                 />
               )}
             </g>
           );
         })}
       </svg>
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t-2 border-[#0B0B0B] bg-[#FFFFFF] px-4 py-2.5">
-        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide">
-          <span className="h-3.5 w-3.5 rounded-full border-2 border-[#0B0B0B] bg-[#FFE600]" />
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t-2 border-[var(--cg-ink)] bg-[var(--cg-paper)] px-4 py-2.5">
+        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-[var(--cg-ink)]">
+          <span className="h-3.5 w-3.5 rounded-full border-2 border-[var(--cg-ink)] bg-[var(--cg-light)]" />
           Person
         </span>
-        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide">
-          <span className="h-3.5 w-5 border-2 border-[#0B0B0B] bg-[#4D7CFE]" />
+        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-[var(--cg-ink)]">
+          <span className="h-3.5 w-5 border-2 border-[var(--cg-ink)] bg-[var(--cg-dark)]" />
           Movie
         </span>
-        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide">
-          <span className="h-3.5 w-3.5 rounded-full border-2 border-dashed border-[#0B0B0B]" />
+        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-[var(--cg-ink)]">
+          <span className="h-3.5 w-3.5 rounded-full border-2 border-dashed border-[var(--cg-secondary)]" />
           Start / end
         </span>
-        <span className="ml-auto hidden text-[11px] font-bold uppercase tracking-wide text-[#6B6B6B] sm:block">
+        <span className="ml-auto hidden text-[11px] font-bold uppercase tracking-wide text-[var(--cg-muted)] sm:block">
           click any node to explore
         </span>
       </div>

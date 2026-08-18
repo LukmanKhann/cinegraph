@@ -3,7 +3,7 @@ import Skeleton from "@mui/material/Skeleton";
 
 export function SkeletonCard() {
   return (
-    <Box className="overflow-hidden border-2 border-[#0B0B0B] bg-[#FFFFFF] shadow-[4px_4px_0_#0B0B0B]">
+    <Box className="overflow-hidden border-2 border-[var(--cg-ink)] bg-[var(--cg-paper)] shadow-[4px_4px_0_var(--cg-shadow)]">
       <Skeleton variant="rectangular" height={112} />
       <Box sx={{ p: 1.5 }}>
         <Skeleton variant="text" width="75%" sx={{ fontSize: "1rem" }} />
@@ -31,8 +31,8 @@ export function Spinner({ label = "Walking the graph…" }: { label?: string }) 
         width={22}
         height={22}
         sx={{
-          border: "2px solid #0B0B0B",
-          bgcolor: "#FFE600",
+          border: "2px solid var(--cg-ink)",
+          bgcolor: "var(--cg-primary)",
           animation: "skeleton-pulse 1.2s ease-in-out infinite",
           "@keyframes skeleton-pulse": {
             "0%,100%": { transform: "scale(1)" },
@@ -40,7 +40,7 @@ export function Spinner({ label = "Walking the graph…" }: { label?: string }) 
           },
         }}
       />
-      <span className="uppercase tracking-wide text-[#6B6B6B]">{label}</span>
+      <span className="uppercase tracking-wide text-[var(--cg-muted)]">{label}</span>
     </Box>
   );
 }

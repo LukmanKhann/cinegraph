@@ -1,45 +1,58 @@
 "use client";
 
 import { createTheme } from "@mui/material/styles";
+import { createContext } from "react";
 
-export const neoColors = {
-  cream: "#FFF8E7",
-  paper: "#FFFFFF",
-  black: "#0B0B0B",
-  yellow: "#FFE600",
-  blue: "#4D7CFE",
-  pink: "#FF4D6D",
-  green: "#3DDC97",
-  orange: "#FF9F1C",
-  purple: "#B983FF",
-  muted: "#6B6B6B",
-  border: "#0B0B0B",
-};
+export interface ThemeMode {
+  dark: boolean;
+  toggle: () => void;
+}
 
+export const ThemeModeContext = createContext<ThemeMode>({
+  dark: false,
+  toggle: () => {},
+});
+
+/** Coffee/maroon neo-brutal palette — surfaces and borders are driven by
+ *  CSS variables (so the .dark class on <html> recolors Tailwind styles),
+ *  while the MUI palette uses real hex values per mode (MUI needs to parse
+ *  colors for hover/contrast math). */
+
+/** Coffee/maroon neo-brutal palette — driven by CSS variables so the
+ *  light/dark toggle in the nav recolors MUI components too. */
 export const movieGradients: Record<string, [string, string]> = {
-  yellow: ["#FFE600", "#FFB800"],
-  blue: ["#4D7CFE", "#7B2CBF"],
-  pink: ["#FF4D6D", "#FF9F1C"],
-  green: ["#3DDC97", "#0FA958"],
-  purple: ["#B983FF", "#4D7CFE"],
-  orange: ["#FF9F1C", "#FF4D6D"],
+  mocha: ["#C8A87C", "#6B4A2F"],
+  maroon: ["#7B2D26", "#3B2A1A"],
+  latte: ["#F3E9D7", "#C8A87C"],
+  espresso: ["#3B2A1A", "#17120C"],
+  cocoa: ["#8A6A45", "#7B2D26"],
+  caramel: ["#C8A87C", "#7B2D26"],
 };
 
-const border = `2px solid ${neoColors.border}`;
-const hardShadow = `4px 4px 0 ${neoColors.border}`;
-const hardShadowSmall = `3px 3px 0 ${neoColors.border}`;
+const border = `2px solid var(--cg-ink)`;
+const hardShadow = `4px 4px 0 var(--cg-shadow)`;
+const hardShadowSmall = `3px 3px 0 var(--cg-shadow)`;
 
-export const theme = createTheme({
-  palette: {
-    mode: "light",
-    primary: { main: neoColors.yellow, contrastText: neoColors.black },
-    secondary: { main: neoColors.blue, contrastText: "#FFFFFF" },
-    success: { main: neoColors.green, contrastText: neoColors.black },
-    error: { main: neoColors.pink, contrastText: "#FFFFFF" },
-    warning: { main: neoColors.orange, contrastText: neoColors.black },
-    background: { default: neoColors.cream, paper: neoColors.paper },
-    text: { primary: neoColors.black, secondary: neoColors.muted },
-  },
+export function buildTheme(mode: "light" | "dark") {
+  const dark = mode === "dark";
+  const paper = dark ? "#2b2118" : "#fbf6ec";
+  return createTheme({
+    palette: {
+      mode,
+      primary: { main: dark ? "#8a6a45" : "#6b4a2f", contrastText: paper },
+      secondary: { main: dark ? "#a04134" : "#7b2d26", contrastText: paper },
+      success: { main: dark ? "#4a3520" : "#3b2a1a", contrastText: paper },
+      error: { main: dark ? "#a04134" : "#7b2d26", contrastText: paper },
+      warning: { main: "#c8a87c", contrastText: dark ? "#fbf6ec" : "#17120c" },
+      background: {
+        default: dark ? "#1e1610" : "#f3e9d7",
+        paper: dark ? "#2b2118" : "#fbf6ec",
+      },
+      text: {
+        primary: dark ? "#d9c3a0" : "#17120c",
+        secondary: dark ? "#8a8578" : "#6b5b45",
+      },
+    },
   shape: { borderRadius: 0 },
   typography: {
     fontFamily:
@@ -56,10 +69,10 @@ export const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundColor: neoColors.cream,
-          color: neoColors.black,
+          backgroundColor: "var(--cg-bg)",
+          color: "var(--cg-ink)",
           backgroundImage:
-            "radial-gradient(circle at 1px 1px, rgba(11,11,11,0.12) 1px, transparent 0)",
+            "radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--cg-ink) 14%, transparent) 1px, transparent 0)",
           backgroundSize: "22px 22px",
         },
       },
@@ -68,7 +81,7 @@ export const theme = createTheme({
       defaultProps: { disableElevation: true },
       styleOverrides: {
         root: {
-          border: `2px solid ${neoColors.black}`,
+          border,
           borderRadius: 0,
           boxShadow: hardShadow,
           fontWeight: 800,
@@ -81,10 +94,10 @@ export const theme = createTheme({
           },
           "&:active": {
             transform: "translate(3px, 3px)",
-            boxShadow: "1px 1px 0 #0B0B0B",
+            boxShadow: "1px 1px 0 var(--cg-shadow)",
           },
           "&.Mui-disabled": {
-            borderColor: neoColors.black,
+            borderColor: "var(--cg-ink)",
             boxShadow: hardShadow,
             opacity: 0.4,
           },
@@ -115,7 +128,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 0,
-          border: `1.5px solid ${neoColors.black}`,
+          border: "1.5px solid var(--cg-ink)",
           fontWeight: 700,
           "&:hover": { boxShadow: hardShadowSmall },
         },
@@ -126,11 +139,11 @@ export const theme = createTheme({
         root: {
           "& .MuiOutlinedInput-root": {
             borderRadius: 0,
-            backgroundColor: neoColors.paper,
-            "& fieldset": { border: `2px solid ${neoColors.black}` },
+            backgroundColor: "var(--cg-paper)",
+            "& fieldset": { border: `2px solid var(--cg-ink)` },
             "&:hover fieldset": { borderWidth: 2 },
             "&.Mui-focused fieldset": {
-              border: `2px solid ${neoColors.black}`,
+              border: `2px solid var(--cg-ink)`,
               boxShadow: hardShadow,
             },
           },
@@ -141,12 +154,13 @@ export const theme = createTheme({
       styleOverrides: {
         paper: {
           borderRadius: 0,
-          border: `2px solid ${neoColors.black}`,
+          border,
           boxShadow: hardShadow,
           marginTop: "6px",
+          backgroundColor: "var(--cg-paper)",
         },
         option: {
-          "&[aria-selected='true']": { backgroundColor: neoColors.yellow },
+          "&[aria-selected='true']": { backgroundColor: "var(--cg-light)" },
         },
       },
     },
@@ -154,11 +168,13 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 0,
-          border: `2px solid ${neoColors.black} !important`,
+          border: `2px solid var(--cg-ink) !important`,
           fontWeight: 800,
+          backgroundColor: "var(--cg-paper)",
+          color: "var(--cg-ink)",
           "&.Mui-selected": {
-            backgroundColor: neoColors.yellow,
-            color: neoColors.black,
+            backgroundColor: "var(--cg-primary)",
+            color: "var(--cg-paper)",
             boxShadow: hardShadowSmall,
           },
         },
@@ -177,9 +193,10 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 0,
-          backgroundColor: "#EDE6D3",
+          backgroundColor: "var(--cg-skeleton)",
         },
       },
     },
   },
-});
+  });
+}

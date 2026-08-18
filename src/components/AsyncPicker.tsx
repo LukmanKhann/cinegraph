@@ -113,7 +113,7 @@ export default function AsyncPicker({
           <li key={key} {...optionProps} className="!font-bold">
             <span className="min-w-0 flex-1 truncate">{option.label}</span>
             {option.sub && (
-              <span className="shrink-0 text-xs font-semibold text-[#6B6B6B]">
+              <span className="shrink-0 text-xs font-semibold text-[var(--cg-muted)]">
                 {option.sub}
               </span>
             )}
@@ -132,14 +132,14 @@ export default function AsyncPicker({
                 ...inputProps,
                 startAdornment: (
                   <>
-                    <SearchIcon sx={{ mr: 1, color: "#6B6B6B" }} fontSize="small" />
+                    <SearchIcon sx={{ mr: 1, color: "var(--cg-muted)" }} fontSize="small" />
                     {inputProps?.startAdornment}
                   </>
                 ),
                 endAdornment: (
                   <>
                     {loading ? (
-                      <CircularProgress size={16} sx={{ color: "#0B0B0B" }} />
+                      <CircularProgress size={16} sx={{ color: "var(--cg-ink)" }} />
                     ) : null}
                     {inputProps?.endAdornment}
                   </>

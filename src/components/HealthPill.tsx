@@ -24,12 +24,12 @@ export default function HealthPill() {
     };
   }, []);
 
-  const color = health === "ok" ? "#3DDC97" : health === "down" ? "#FF4D6D" : "#6B6B6B";
+  const color = health === "ok" ? "var(--cg-dark)" : health === "down" ? "var(--cg-secondary)" : "var(--cg-muted)";
 
   return (
     <Box
       component="span"
-      className="inline-flex items-center gap-1.5 border-2 border-[#0B0B0B] bg-[#FFFFFF] px-2 py-0.5 shadow-[2px_2px_0_#0B0B0B]"
+      className="inline-flex items-center gap-1.5 border-2 border-[var(--cg-ink)] bg-[var(--cg-paper)] px-2 py-0.5 shadow-[2px_2px_0_var(--cg-shadow)]"
       title={
         health === "ok"
           ? "Connected to the live CognoDB graph"
@@ -42,7 +42,7 @@ export default function HealthPill() {
           width: 9,
           height: 9,
           bgcolor: color,
-          border: "1.5px solid #0B0B0B",
+          border: "1.5px solid var(--cg-ink)",
           animation: health === "checking" ? "pulse-soft 1.2s infinite" : "none",
           "@keyframes pulse-soft": {
             "0%,100%": { opacity: 1 },

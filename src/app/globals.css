@@ -5,18 +5,46 @@
   --font-mono: var(--font-geist-mono);
 }
 
+:root {
+  --cg-bg: #f3e9d7;
+  --cg-paper: #fbf6ec;
+  --cg-ink: #17120c;
+  --cg-shadow: #17120c;
+  --cg-muted: #8a8578;
+  --cg-primary: #6b4a2f;
+  --cg-secondary: #7b2d26;
+  --cg-light: #c8a87c;
+  --cg-dark: #3b2a1a;
+  --cg-error-bg: #f5e3e0;
+  --cg-skeleton: #e3d5bb;
+}
+
+.dark {
+  --cg-bg: #1e1610;
+  --cg-paper: #2b2118;
+  --cg-ink: #d9c3a0;
+  --cg-shadow: #0f0b08;
+  --cg-muted: #8a8578;
+  --cg-primary: #8a6a45;
+  --cg-secondary: #a04134;
+  --cg-light: #c8a87c;
+  --cg-dark: #4a3520;
+  --cg-error-bg: #3a2622;
+  --cg-skeleton: #3a2e20;
+}
+
 html {
-  scrollbar-color: #0b0b0b #fff8e7;
+  scrollbar-color: var(--cg-ink) var(--cg-bg);
 }
 
 body {
-  background: #fff8e7;
-  color: #0b0b0b;
+  background: var(--cg-bg);
+  color: var(--cg-ink);
 }
 
 ::selection {
-  background: #ffe600;
-  color: #0b0b0b;
+  background: var(--cg-light);
+  color: var(--cg-ink);
 }
 
 @keyframes fade-up {

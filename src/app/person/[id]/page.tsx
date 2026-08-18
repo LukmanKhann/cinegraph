@@ -17,7 +17,7 @@ interface PersonResponse {
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <Box className="mb-4 flex items-center" sx={{ borderBottom: "3px solid #0B0B0B", pb: 1 }}>
+    <Box className="mb-4 flex items-center" sx={{ borderBottom: "3px solid var(--cg-ink)", pb: 1 }}>
       <Typography variant="h5" component="h2">
         {children}
       </Typography>
@@ -61,7 +61,7 @@ export default function PersonPage({
     return (
       <div className="pt-10 space-y-6">
         <div className="flex items-center gap-4">
-          <Skeleton variant="rectangular" width={64} height={64} sx={{ border: "2px solid #0B0B0B" }} />
+          <Skeleton variant="rectangular" width={64} height={64} sx={{ border: "2px solid var(--cg-ink)" }} />
           <Box sx={{ flex: 1 }}>
             <Skeleton variant="text" width="45%" sx={{ fontSize: "2rem" }} />
             <Skeleton variant="text" width="30%" sx={{ fontSize: "1rem" }} />
@@ -69,7 +69,7 @@ export default function PersonPage({
         </div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 6 }).map((_, index) => (
-            <Skeleton key={index} variant="rectangular" height={88} sx={{ border: "2px solid #0B0B0B" }} />
+            <Skeleton key={index} variant="rectangular" height={88} sx={{ border: "2px solid var(--cg-ink)" }} />
           ))}
         </div>
       </div>
@@ -111,14 +111,14 @@ export default function PersonPage({
   return (
     <div className="fade-up pt-8">
       <section className="flex flex-wrap items-center gap-5">
-        <span className="grid h-16 w-16 place-items-center border-2 border-[#0B0B0B] bg-[#FFE600] text-xl font-black shadow-[4px_4px_0_#0B0B0B]">
+        <span className="grid h-16 w-16 place-items-center border-2 border-[var(--cg-ink)] bg-[var(--cg-primary)] text-xl font-black shadow-[4px_4px_0_var(--cg-shadow)]">
           {initials}
         </span>
         <Box sx={{ minWidth: 220 }}>
           <Typography variant="h3" component="h1">
             {person.name}
           </Typography>
-          <Typography variant="body2" sx={{ fontWeight: 700, color: "#6B6B6B" }}>
+          <Typography variant="body2" sx={{ fontWeight: 700, color: "var(--cg-muted)" }}>
             {person.born ? `Born ${person.born}` : "Birth year unknown"} ·{" "}
             {person.actedIn.length} films as actor · {person.directed.length} as
             director
@@ -139,21 +139,21 @@ export default function PersonPage({
               <Box component="li" key={item.id}>
                 <Link
                   href={`/movie/${item.id}`}
-                  className="group flex flex-wrap items-baseline gap-x-3 border-2 border-[#0B0B0B] bg-[#FFFFFF] px-4 py-2.5 shadow-[3px_3px_0_#0B0B0B] transition-transform hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#0B0B0B]"
+                  className="group flex flex-wrap items-baseline gap-x-3 border-2 border-[var(--cg-ink)] bg-[var(--cg-paper)] px-4 py-2.5 shadow-[3px_3px_0_var(--cg-shadow)] transition-transform hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_var(--cg-shadow)]"
                 >
-                  <span className="border-2 border-[#0B0B0B] bg-[#0B0B0B] px-1.5 py-0.5 text-[10px] font-black text-white">
+                  <span className="border-2 border-[var(--cg-ink)] bg-[var(--cg-ink)] px-1.5 py-0.5 text-[10px] font-black text-white">
                     {item.year}
                   </span>
-                  <span className="text-sm font-extrabold group-hover:underline group-hover:decoration-[#FF4D6D] group-hover:decoration-2">
+                  <span className="text-sm font-extrabold group-hover:underline group-hover:decoration-[var(--cg-secondary)] group-hover:decoration-2">
                     {item.title}
                   </span>
                   {item.role && (
-                    <span className="text-xs font-semibold text-[#6B6B6B]">
+                    <span className="text-xs font-semibold text-[var(--cg-muted)]">
                       as {item.role}
                     </span>
                   )}
                   {item.director && (
-                    <span className="ml-auto text-xs font-semibold text-[#6B6B6B]">
+                    <span className="ml-auto text-xs font-semibold text-[var(--cg-muted)]">
                       dir. {item.director}
                     </span>
                   )}
@@ -176,9 +176,9 @@ export default function PersonPage({
               <Link
                 key={coStar.id}
                 href={`/person/${coStar.id}`}
-                className="group flex items-center gap-3 border-2 border-[#0B0B0B] bg-[#FFFFFF] p-3 shadow-[3px_3px_0_#0B0B0B] transition-transform hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#0B0B0B]"
+                className="group flex items-center gap-3 border-2 border-[var(--cg-ink)] bg-[var(--cg-paper)] p-3 shadow-[3px_3px_0_var(--cg-shadow)] transition-transform hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_var(--cg-shadow)]"
               >
-                <span className="grid h-10 w-10 shrink-0 place-items-center border-2 border-[#0B0B0B] bg-[#3DDC97] text-xs font-black shadow-[2px_2px_0_#0B0B0B]">
+                <span className="grid h-10 w-10 shrink-0 place-items-center border-2 border-[var(--cg-ink)] bg-[var(--cg-dark)] text-xs font-black shadow-[2px_2px_0_var(--cg-shadow)]">
                   {coStar.name
                     .split(" ")
                     .slice(0, 2)
@@ -186,14 +186,14 @@ export default function PersonPage({
                     .join("")}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-extrabold group-hover:underline group-hover:decoration-[#FF4D6D] group-hover:decoration-2">
+                  <span className="block truncate text-sm font-extrabold group-hover:underline group-hover:decoration-[var(--cg-secondary)] group-hover:decoration-2">
                     {coStar.name}
                   </span>
-                  <span className="block truncate text-xs font-semibold text-[#6B6B6B]">
+                  <span className="block truncate text-xs font-semibold text-[var(--cg-muted)]">
                     together in {coStar.with.join(" · ")}
                   </span>
                 </span>
-                <span className="shrink-0 border-2 border-[#0B0B0B] bg-[#FFE600] px-1.5 py-0.5 text-[11px] font-black shadow-[2px_2px_0_#0B0B0B]">
+                <span className="shrink-0 border-2 border-[var(--cg-ink)] bg-[var(--cg-primary)] px-1.5 py-0.5 text-[11px] font-black shadow-[2px_2px_0_var(--cg-shadow)]">
                   {coStar.moviesTogether}
                 </span>
               </Link>

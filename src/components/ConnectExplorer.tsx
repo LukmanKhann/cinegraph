@@ -62,7 +62,7 @@ export default function ConnectExplorer({
 
   return (
     <div className="fade-up pt-10">
-      <span className="inline-block border-2 border-[#0B0B0B] bg-[#FF4D6D] px-2.5 py-1 text-xs font-black uppercase tracking-[0.2em] text-white shadow-[3px_3px_0_#0B0B0B]">
+      <span className="inline-block border-2 border-[var(--cg-ink)] bg-[var(--cg-secondary)] px-2.5 py-1 text-xs font-black uppercase tracking-[0.2em] text-white shadow-[3px_3px_0_var(--cg-shadow)]">
         The flagship query
       </span>
       <Typography variant="h1" component="h1" sx={{ mt: 2 }}>
@@ -78,9 +78,9 @@ export default function ConnectExplorer({
         sx={{
           mt: 5,
           p: { xs: 2, sm: 3 },
-          border: "2px solid #0B0B0B",
-          bgcolor: "#FFFFFF",
-          boxShadow: "6px 6px 0 #0B0B0B",
+          border: "2px solid var(--cg-ink)",
+          bgcolor: "var(--cg-paper)",
+          boxShadow: "6px 6px 0 var(--cg-shadow)",
           display: "flex",
           flexDirection: { xs: "column", lg: "row" },
           alignItems: { lg: "flex-end" },
@@ -136,8 +136,8 @@ export default function ConnectExplorer({
                 key={hops}
                 onClick={() => setMaxHops(hops)}
                 sx={{
-                  bgcolor: maxHops === hops ? "#FFE600" : "#FFFFFF",
-                  boxShadow: maxHops === hops ? "3px 3px 0 #0B0B0B" : "none",
+                  bgcolor: maxHops === hops ? "var(--cg-primary)" : "var(--cg-paper)",
+                  boxShadow: maxHops === hops ? "3px 3px 0 var(--cg-shadow)" : "none",
                   borderWidth: "2px",
                 }}
               >
@@ -176,9 +176,9 @@ export default function ConnectExplorer({
             <Box>
               <Box
                 className="mb-5 flex items-center gap-3"
-                sx={{ borderBottom: "3px solid #0B0B0B", pb: 1 }}
+                sx={{ borderBottom: "3px solid var(--cg-ink)", pb: 1 }}
               >
-                <span className="border-2 border-[#0B0B0B] bg-[#3DDC97] px-2.5 py-1 text-xs font-black uppercase shadow-[3px_3px_0_#0B0B0B]">
+                <span className="border-2 border-[var(--cg-ink)] bg-[var(--cg-dark)] px-2.5 py-1 text-xs font-black uppercase shadow-[3px_3px_0_var(--cg-shadow)]">
                   Connected
                 </span>
                 <Typography variant="h5" component="h2">
@@ -189,7 +189,7 @@ export default function ConnectExplorer({
               </Box>
               <Typography variant="body2" sx={{ mb: 3, fontWeight: 600 }}>
                 This is the answer to{" "}
-                <code className="border-[1.5px] border-[#0B0B0B] bg-[#FFF8E7] px-1.5 py-0.5 text-xs">
+                <code className="border-[1.5px] border-[var(--cg-ink)] bg-[var(--cg-bg)] px-1.5 py-0.5 text-xs">
                   MATCH p = shortestPath(…) RETURN p
                 </code>{" "}
                 — no SQL joins, no recursion. Click any node to keep exploring.
@@ -204,37 +204,37 @@ export default function ConnectExplorer({
                   {result.steps.map((step, index) => (
                     <Box component="li" key={index} sx={{ display: "flex", gap: 2 }}>
                       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <span className="grid h-7 w-7 shrink-0 place-items-center border-2 border-[#0B0B0B] bg-[#FFE600] text-xs font-black shadow-[2px_2px_0_#0B0B0B]">
+                        <span className="grid h-7 w-7 shrink-0 place-items-center border-2 border-[var(--cg-ink)] bg-[var(--cg-primary)] text-xs font-black shadow-[2px_2px_0_var(--cg-shadow)]">
                           {index + 1}
                         </span>
                         {index < result.steps.length - 1 && (
-                          <span className="w-0.5 flex-1 bg-[#0B0B0B]" />
+                          <span className="w-0.5 flex-1 bg-[var(--cg-ink)]" />
                         )}
                       </Box>
                       <Box sx={{ pb: 4 }}>
                         <Typography variant="body2" sx={{ fontWeight: 800 }}>
                           <Link
                             href={`/${step.fromKind === "person" ? "person" : "movie"}/${step.fromId}`}
-                            className="underline decoration-[#FF4D6D] decoration-2 underline-offset-2 hover:decoration-[#0B0B0B]"
+                            className="underline decoration-[var(--cg-secondary)] decoration-2 underline-offset-2 hover:decoration-[var(--cg-ink)]"
                           >
                             {step.from}
                           </Link>
                           {" → "}
                           <Link
                             href={`/${step.viaKind === "person" ? "person" : "movie"}/${step.viaId}`}
-                            className="underline decoration-[#4D7CFE] decoration-2 underline-offset-2 hover:decoration-[#0B0B0B]"
+                            className="underline decoration-[var(--cg-secondary)] decoration-2 underline-offset-2 hover:decoration-[var(--cg-ink)]"
                           >
                             {step.via}
                           </Link>
                           {" → "}
                           <Link
                             href={`/${step.toKind === "person" ? "person" : "movie"}/${step.toId}`}
-                            className="underline decoration-[#FF4D6D] decoration-2 underline-offset-2 hover:decoration-[#0B0B0B]"
+                            className="underline decoration-[var(--cg-secondary)] decoration-2 underline-offset-2 hover:decoration-[var(--cg-ink)]"
                           >
                             {step.to}
                           </Link>
                         </Typography>
-                        <Typography variant="body2" sx={{ color: "#6B6B6B", fontWeight: 600 }}>
+                        <Typography variant="body2" sx={{ color: "var(--cg-muted)", fontWeight: 600 }}>
                           {step.detail}
                         </Typography>
                       </Box>
@@ -246,15 +246,15 @@ export default function ConnectExplorer({
           ) : (
             <Box
               className="flex flex-col items-center gap-2 px-6 py-12 text-center"
-              sx={{ border: "3px dashed #0B0B0B", bgcolor: "#FFFFFF" }}
+              sx={{ border: "3px dashed var(--cg-ink)", bgcolor: "var(--cg-paper)" }}
             >
-              <span className="grid h-14 w-14 place-items-center border-2 border-[#0B0B0B] bg-[#FF9F1C] text-2xl shadow-[3px_3px_0_#0B0B0B]">
+              <span className="grid h-14 w-14 place-items-center border-2 border-[var(--cg-ink)] bg-[var(--cg-light)] text-2xl shadow-[3px_3px_0_var(--cg-shadow)]">
                 🕸️
               </span>
               <Typography variant="h6" component="p">
                 No connection found within {maxHops} hops
               </Typography>
-              <Typography variant="body2" sx={{ maxWidth: 420, color: "#6B6B6B", fontWeight: 600 }}>
+              <Typography variant="body2" sx={{ maxWidth: 420, color: "var(--cg-muted)", fontWeight: 600 }}>
                 That’s a real answer too — the graph proved there is no path of
                 that length. Try a deeper search (8 hops) or a different pair.
               </Typography>

@@ -27,7 +27,7 @@ function formatRuntime(minutes: number | null): string | null {
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <Box className="mb-4 flex items-center" sx={{ borderBottom: "3px solid #0B0B0B", pb: 1 }}>
+    <Box className="mb-4 flex items-center" sx={{ borderBottom: "3px solid var(--cg-ink)", pb: 1 }}>
       <Typography variant="h5" component="h2">
         {children}
       </Typography>
@@ -70,12 +70,12 @@ export default function MoviePage({
   if (status === "loading") {
     return (
       <div className="pt-10 space-y-6">
-        <Skeleton variant="rectangular" height={180} sx={{ border: "2px solid #0B0B0B", boxShadow: "5px 5px 0 #0B0B0B" }} />
+        <Skeleton variant="rectangular" height={180} sx={{ border: "2px solid var(--cg-ink)", boxShadow: "5px 5px 0 var(--cg-shadow)" }} />
         <Skeleton variant="text" width="50%" sx={{ fontSize: "2rem" }} />
         <Skeleton variant="text" width="70%" sx={{ fontSize: "1rem" }} />
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
-            <Skeleton key={index} variant="rectangular" height={150} sx={{ border: "2px solid #0B0B0B" }} />
+            <Skeleton key={index} variant="rectangular" height={150} sx={{ border: "2px solid var(--cg-ink)" }} />
           ))}
         </div>
       </div>
@@ -115,8 +115,8 @@ export default function MoviePage({
       <Box
         className="relative overflow-hidden px-6 py-10 sm:px-10 sm:py-14"
         sx={{
-          border: "2px solid #0B0B0B",
-          boxShadow: "7px 7px 0 #0B0B0B",
+          border: "2px solid var(--cg-ink)",
+          boxShadow: "7px 7px 0 var(--cg-shadow)",
           background: `linear-gradient(135deg, ${gradientFrom} 0%, ${gradientTo} 100%)`,
         }}
       >
@@ -127,9 +127,9 @@ export default function MoviePage({
               label={genre}
               size="small"
               sx={{
-                bgcolor: "#0B0B0B",
-                color: "#FFFFFF",
-                border: "2px solid #0B0B0B",
+                bgcolor: "var(--cg-ink)",
+                color: "var(--cg-paper)",
+                border: "2px solid var(--cg-ink)",
                 fontWeight: 800,
                 textTransform: "uppercase",
                 "&:hover": { boxShadow: "none" },
@@ -167,16 +167,16 @@ export default function MoviePage({
 
       <section className="mt-10">
         <SectionHeading>
-          Cast <span className="text-sm text-[#6B6B6B]">· {movie.cast.length} actors</span>
+          Cast <span className="text-sm text-[var(--cg-muted)]">· {movie.cast.length} actors</span>
         </SectionHeading>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {movie.cast.map((member) => (
             <Link
               key={member.id}
               href={`/person/${member.id}`}
-              className="group flex items-center gap-3 border-2 border-[#0B0B0B] bg-[#FFFFFF] p-3 shadow-[3px_3px_0_#0B0B0B] transition-transform hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#0B0B0B]"
+              className="group flex items-center gap-3 border-2 border-[var(--cg-ink)] bg-[var(--cg-paper)] p-3 shadow-[3px_3px_0_var(--cg-shadow)] transition-transform hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_var(--cg-shadow)]"
             >
-              <span className="grid h-9 w-9 shrink-0 place-items-center border-2 border-[#0B0B0B] bg-[#B983FF] text-xs font-black shadow-[2px_2px_0_#0B0B0B]">
+              <span className="grid h-9 w-9 shrink-0 place-items-center border-2 border-[var(--cg-ink)] bg-[var(--cg-light)] text-xs font-black shadow-[2px_2px_0_var(--cg-shadow)]">
                 {member.name
                   .split(" ")
                   .slice(0, 2)
@@ -184,11 +184,11 @@ export default function MoviePage({
                   .join("")}
               </span>
               <span className="min-w-0">
-                <span className="block truncate text-sm font-extrabold group-hover:underline group-hover:decoration-[#FF4D6D] group-hover:decoration-2">
+                <span className="block truncate text-sm font-extrabold group-hover:underline group-hover:decoration-[var(--cg-secondary)] group-hover:decoration-2">
                   {member.name}
                 </span>
                 {member.role && (
-                  <span className="block truncate text-xs font-semibold text-[#6B6B6B]">
+                  <span className="block truncate text-xs font-semibold text-[var(--cg-muted)]">
                     as {member.role}
                   </span>
                 )}
@@ -210,7 +210,7 @@ export default function MoviePage({
             {recommendations.map(({ movie: other, sharedActors, sharedGenres }) => (
               <div key={other.id} className="relative">
                 <MovieCard movie={other} />
-                <span className="absolute -top-2 right-2 border-2 border-[#0B0B0B] bg-[#FF9F1C] px-1.5 py-0.5 text-[10px] font-black uppercase shadow-[2px_2px_0_#0B0B0B]">
+                <span className="absolute -top-2 right-2 border-2 border-[var(--cg-ink)] bg-[var(--cg-light)] px-1.5 py-0.5 text-[10px] font-black uppercase shadow-[2px_2px_0_var(--cg-shadow)]">
                   {sharedActors > 0 && sharedGenres > 0
                     ? `👥 ${sharedActors} · 🏷 ${sharedGenres}`
                     : sharedActors > 0

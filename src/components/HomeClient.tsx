@@ -16,9 +16,9 @@ function StatBox({ value, label, color }: { value: number; label: string; color:
   return (
     <Box
       sx={{
-        border: "2px solid #0B0B0B",
+        border: "2px solid var(--cg-ink)",
         bgcolor: color,
-        boxShadow: "4px 4px 0 #0B0B0B",
+        boxShadow: "4px 4px 0 var(--cg-shadow)",
         px: 3,
         py: 2,
         transform: "rotate(-1deg)",
@@ -59,7 +59,7 @@ export default function HomeClient() {
   return (
     <div className="fade-up">
       <section className="pt-12 pb-8 sm:pt-16">
-        <span className="inline-block border-2 border-[#0B0B0B] bg-[#B983FF] px-2.5 py-1 text-xs font-black uppercase tracking-[0.2em] shadow-[3px_3px_0_#0B0B0B]">
+        <span className="inline-block border-2 border-[var(--cg-ink)] bg-[var(--cg-light)] px-2.5 py-1 text-xs font-black uppercase tracking-[0.2em] shadow-[3px_3px_0_var(--cg-shadow)]">
           Backed by CognoDB · openCypher over Bolt
         </span>
         <Typography
@@ -70,7 +70,7 @@ export default function HomeClient() {
           Movies are just the start.
           <br />
           <span
-            className="inline-block bg-[#FFE600] px-2 pb-0.5 shadow-[4px_4px_0_#0B0B0B]"
+            className="inline-block bg-[var(--cg-primary)] px-2 pb-0.5 shadow-[4px_4px_0_var(--cg-shadow)]"
           >
             Their connections are the story.
           </span>
@@ -89,7 +89,7 @@ export default function HomeClient() {
         </Box>
         <Link
           href="/connect"
-          className="mt-4 inline-flex items-center gap-1.5 text-sm font-extrabold text-[#0B0B0B] underline decoration-[#FF4D6D] decoration-2 underline-offset-4 hover:decoration-[#0B0B0B]"
+          className="mt-4 inline-flex items-center gap-1.5 text-sm font-extrabold text-[var(--cg-ink)] underline decoration-[var(--cg-secondary)] decoration-2 underline-offset-4 hover:decoration-[var(--cg-ink)]"
         >
           …or explore how people are connected →
         </Link>
@@ -97,16 +97,16 @@ export default function HomeClient() {
 
       {data && (
         <section className="flex flex-wrap gap-6 py-6">
-          <StatBox value={data.stats.movies} label="films" color="#FFE600" />
-          <StatBox value={data.stats.people} label="actors & directors" color="#3DDC97" />
-          <StatBox value={data.stats.relationships} label="typed relationships" color="#4D7CFE" />
+          <StatBox value={data.stats.movies} label="films" color="var(--cg-primary)" />
+          <StatBox value={data.stats.people} label="actors & directors" color="var(--cg-dark)" />
+          <StatBox value={data.stats.relationships} label="typed relationships" color="var(--cg-secondary)" />
         </section>
       )}
 
       <section className="mt-6">
         <Box
           className="mb-5 flex items-center justify-between"
-          sx={{ borderBottom: "3px solid #0B0B0B", pb: 1 }}
+          sx={{ borderBottom: "3px solid var(--cg-ink)", pb: 1 }}
         >
           <Typography variant="h5" component="h2">
             🍿 Recently added
