@@ -137,6 +137,7 @@ export default function ConnectExplorer({
                 onClick={() => setMaxHops(hops)}
                 sx={{
                   bgcolor: maxHops === hops ? "var(--cg-primary)" : "var(--cg-paper)",
+                  color: maxHops === hops ? "var(--cg-paper)" : "var(--cg-ink)",
                   boxShadow: maxHops === hops ? "3px 3px 0 var(--cg-shadow)" : "none",
                   borderWidth: "2px",
                 }}
