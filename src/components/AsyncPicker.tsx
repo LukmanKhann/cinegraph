@@ -121,6 +121,7 @@ export default function AsyncPicker({
             placeholder={placeholder}
             autoFocus={autoFocus}
             slotProps={{
+              ...params.slotProps,
               input: {
                 ...inputProps,
                 startAdornment: (

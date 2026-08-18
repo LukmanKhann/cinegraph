@@ -1,0 +1,3 @@
+# generated repro artifacts
+scripts/repro-bundle.mjs
+scripts/repro-out.txt
