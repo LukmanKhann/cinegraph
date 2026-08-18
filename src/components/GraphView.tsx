@@ -5,13 +5,21 @@ import { useMemo } from "react";
 import type { GraphData, GraphNode } from "@/lib/types";
 
 const WIDTH = 1000;
-const HEIGHT = 440;
-const PAD_X = 70;
-const PAD_Y = 56;
+const PAD_X = 60;
+const NODE_SPACING = 58;
+
+const BLACK = "#0B0B0B";
+const YELLOW = "#FFE600";
+const BLUE = "#4D7CFE";
 
 interface Position {
   x: number;
   y: number;
+}
+
+interface LayoutResult {
+  positions: Map<string, Position>;
+  height: number;
 }
 
 function layersFrom(data: GraphData, startId: string): Map<string, number> {
@@ -37,31 +45,82 @@ function layersFrom(data: GraphData, startId: string): Map<string, number> {
   return dist;
 }
 
-function layout(data: GraphData, startId: string): Map<string, Position> {
+/**
+ * Layered (sugiyama-ish) layout with:
+ * - dynamic height so layers with many nodes never overlap
+ * - column width proportional to how many nodes a layer holds
+ * - barycenter ordering to keep edges from crossing
+ */
+function layout(data: GraphData, startId: string): LayoutResult {
   const dist = layersFrom(data, startId);
-  const positions = new Map<string, Position>();
   const byLayer = new Map<number, string[]>();
+  const adj = new Map<string, string[]>();
   for (const node of data.nodes) {
     const layer = dist.get(node.id) ?? 0;
     const list = byLayer.get(layer) ?? [];
     list.push(node.id);
     byLayer.set(layer, list);
   }
-  const maxLayer = Math.max(0, ...byLayer.keys());
-  for (const [layer, ids] of byLayer) {
-    const x = PAD_X + (layer / Math.max(maxLayer, 1)) * (WIDTH - PAD_X * 2);
-    ids.forEach((id, index) => {
-      const count = ids.length;
-      const y = HEIGHT / 2 + (index - (count - 1) / 2) * Math.min(84, (HEIGHT - PAD_Y * 2) / Math.max(count, 1));
-      positions.set(id, { x, y });
+  for (const link of data.links) {
+    for (const [a, b] of [
+      [link.source, link.target],
+      [link.target, link.source],
+    ]) {
+      const list = adj.get(a) ?? [];
+      list.push(b);
+      adj.set(a, list);
+    }
+  }
+
+  const layers = [...byLayer.keys()].sort((a, b) => a - b);
+
+  const weights = layers.map((layer) => byLayer.get(layer)!.length + 1);
+  const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+  const available = WIDTH - PAD_X * 2;
+  const layerX = new Map<number, number>();
+  let cursor = PAD_X;
+  layers.forEach((layer, index) => {
+    const width = (available * weights[index]) / totalWeight;
+    layerX.set(layer, cursor + width / 2);
+    cursor += width;
+  });
+
+  const positions = new Map<string, Position>();
+  const barycenterOf = (id: string): number => {
+    const neighbors = (adj.get(id) ?? []).filter((other) => {
+      const d = dist.get(other);
+      return d != null && d === (dist.get(id) ?? 0) - 1;
+    });
+    if (neighbors.length === 0) return 0;
+    const sum = neighbors.reduce(
+      (acc, other) => acc + (positions.get(other)?.y ?? 0),
+      0,
+    );
+    return sum / neighbors.length;
+  };
+
+  let maxCount = 1;
+  for (let li = 0; li < layers.length; li++) {
+    const layer = layers[li];
+    const ids = byLayer.get(layer)!;
+    const count = ids.length;
+    maxCount = Math.max(maxCount, count);
+    const ordered =
+      li === 0
+        ? ids
+        : [...ids].sort((a, b) => barycenterOf(a) - barycenterOf(b));
+    ordered.forEach((id, index) => {
+      const y = (index - (count - 1) / 2) * NODE_SPACING;
+      positions.set(id, { x: layerX.get(layer)!, y });
     });
   }
-  return positions;
-}
 
-const BLACK = "#0B0B0B";
-const YELLOW = "#FFE600";
-const BLUE = "#4D7CFE";
+  const height = Math.max(400, maxCount * NODE_SPACING + NODE_SPACING * 2);
+  for (const [id, pos] of positions) {
+    positions.set(id, { x: pos.x, y: pos.y + height / 2 });
+  }
+  return { positions, height };
+}
 
 function truncate(label: string, max = 18): string {
   return label.length > max ? `${label.slice(0, max - 1)}…` : label;
@@ -75,24 +134,25 @@ export default function GraphView({
   startId: string;
 }) {
   const router = useRouter();
-  const positioned = useMemo(() => {
-    const positions = layout(data, startId);
+  const { positions, height, endId } = useMemo(() => {
+    const { positions: layoutPositions, height: layoutHeight } = layout(data, startId);
     const endId =
       data.nodes.length > 0
         ? data.nodes.reduce((a, b) =>
-            (positions.get(b.id)?.x ?? 0) > (positions.get(a.id)?.x ?? 0) ? b : a,
+            (layoutPositions.get(b.id)?.x ?? 0) >
+            (layoutPositions.get(a.id)?.x ?? 0)
+              ? b
+              : a,
           ).id
         : startId;
-    return { positions, endId };
+    return { positions: layoutPositions, height: layoutHeight, endId };
   }, [data, startId]);
 
   if (data.nodes.length === 0) {
     return null;
   }
 
-  const { positions, endId } = positioned;
-
-  const edgePath = (link: GraphData["links"][number]) => {
+  const edgePath = (link: GraphData["links"][number], index: number) => {
     const a = positions.get(link.source);
     const b = positions.get(link.target);
     if (!a || !b) return null;
@@ -101,10 +161,10 @@ export default function GraphView({
     const dx = b.x - a.x;
     const dy = b.y - a.y;
     const len = Math.hypot(dx, dy) || 1;
-    const bend = Math.max(18, Math.min(60, len * 0.18));
+    const bend = (Math.max(18, Math.min(60, len * 0.18)) * (index % 2 === 0 ? 1 : -1));
     const ox = (-dy / len) * bend;
     const oy = (dx / len) * bend;
-    return { d: `M ${a.x} ${a.y} Q ${mx + ox} ${my + oy} ${b.x} ${b.y}`, a, b };
+    return { d: `M ${a.x} ${a.y} Q ${mx + ox} ${my + oy} ${b.x} ${b.y}` };
   };
 
   const onNodeClick = (node: GraphNode) => {
@@ -115,109 +175,128 @@ export default function GraphView({
     node.id === startId || node.id === endId;
 
   return (
-    <svg
-      viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-      className="w-full border-2 border-[#0B0B0B] bg-[#FFF8E7] shadow-[5px_5px_0_#0B0B0B]"
-      role="img"
-      aria-label="Graph visualisation of connections"
-    >
-      <defs>
-        <marker
-          id="arrow"
-          viewBox="0 0 10 10"
-          refX="9"
-          refY="5"
-          markerWidth="7"
-          markerHeight="7"
-          orient="auto-start-reverse"
-        >
-          <path d="M 0 1 L 9 5 L 0 9 z" fill="#0B0B0B" />
-        </marker>
-      </defs>
-
-      {data.links.map((link, index) => {
-        const path = edgePath(link);
-        if (!path) return null;
-        return (
-          <path
-            key={`${link.source}-${link.target}-${index}`}
-            d={path.d}
-            fill="none"
-            stroke="#0B0B0B"
-            strokeWidth={2}
-            strokeLinecap="round"
-            markerEnd="url(#arrow)"
+    <div className="w-full border-2 border-[#0B0B0B] bg-[#FFF8E7] shadow-[5px_5px_0_#0B0B0B]">
+      <svg
+        viewBox={`0 0 ${WIDTH} ${height}`}
+        className="block h-auto w-full"
+        role="img"
+        aria-label="Graph visualisation of connections"
+      >
+        <defs>
+          <marker
+            id="arrow"
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
           >
-            <title>
-              {link.type} · {link.role ?? "—"}
-            </title>
-          </path>
-        );
-      })}
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#0B0B0B" />
+          </marker>
+        </defs>
 
-      {data.nodes.map((node) => {
-        const pos = positions.get(node.id);
-        if (!pos) return null;
-        const endpoint = isEndpoint(node);
-        const isPerson = node.kind === "person";
-        return (
-          <g
-            key={node.id}
-            transform={`translate(${pos.x}, ${pos.y})`}
-            className="cursor-pointer"
-            onClick={() => onNodeClick(node)}
-          >
-            <title>
-              {node.label}
-              {node.sub ? ` (${node.sub})` : ""}
-            </title>
-            {isPerson ? (
-              <circle
-                r={19}
-                fill={YELLOW}
-                stroke={BLACK}
-                strokeWidth={2.5}
-                style={{ filter: "drop-shadow(2px 2px 0 #0B0B0B)" }}
-              />
-            ) : (
-              <rect
-                x={-58}
-                y={-16}
-                width={116}
-                height={32}
-                rx={2}
-                fill={BLUE}
-                stroke={BLACK}
-                strokeWidth={2.5}
-                style={{ filter: "drop-shadow(2px 2px 0 #0B0B0B)" }}
-              />
-            )}
-            <text
-              textAnchor="middle"
-              y={isPerson ? 5 : 4}
-              fontSize={isPerson ? 13 : 11}
-              fontWeight={800}
-              fill={isPerson ? BLACK : "#FFFFFF"}
+        {data.links.map((link, index) => {
+          const path = edgePath(link, index);
+          if (!path) return null;
+          return (
+            <path
+              key={`${link.source}-${link.target}-${index}`}
+              d={path.d}
+              fill="none"
+              stroke="#0B0B0B"
+              strokeWidth={2}
+              strokeLinecap="round"
+              markerEnd="url(#arrow)"
             >
-              {isPerson ? node.label.split(" ")[0] : truncate(node.label, 17)}
-            </text>
-            {!isPerson && (
-              <text textAnchor="middle" y={24} fontSize={9} fontWeight={700} fill={BLACK}>
-                {node.year ?? ""}
+              <title>
+                {link.type} · {link.role ?? "—"}
+              </title>
+            </path>
+          );
+        })}
+
+        {data.nodes.map((node) => {
+          const pos = positions.get(node.id);
+          if (!pos) return null;
+          const endpoint = isEndpoint(node);
+          const isPerson = node.kind === "person";
+          return (
+            <g
+              key={node.id}
+              transform={`translate(${pos.x}, ${pos.y})`}
+              className="cursor-pointer"
+              onClick={() => onNodeClick(node)}
+            >
+              <title>
+                {node.label}
+                {node.sub ? ` (${node.sub})` : ""}
+              </title>
+              {isPerson ? (
+                <circle
+                  r={19}
+                  fill={YELLOW}
+                  stroke={BLACK}
+                  strokeWidth={2.5}
+                  style={{ filter: "drop-shadow(2px 2px 0 #0B0B0B)" }}
+                />
+              ) : (
+                <rect
+                  x={-58}
+                  y={-16}
+                  width={116}
+                  height={32}
+                  rx={2}
+                  fill={BLUE}
+                  stroke={BLACK}
+                  strokeWidth={2.5}
+                  style={{ filter: "drop-shadow(2px 2px 0 #0B0B0B)" }}
+                />
+              )}
+              <text
+                textAnchor="middle"
+                y={isPerson ? 5 : 4}
+                fontSize={isPerson ? 13 : 11}
+                fontWeight={800}
+                fill={isPerson ? BLACK : "#FFFFFF"}
+              >
+                {isPerson ? node.label.split(" ")[0] : truncate(node.label, 17)}
               </text>
-            )}
-            {endpoint && (
-              <circle
-                r={25}
-                fill="none"
-                stroke={BLACK}
-                strokeWidth={2}
-                strokeDasharray="4 3"
-              />
-            )}
-          </g>
-        );
-      })}
-    </svg>
+              {!isPerson && (
+                <text textAnchor="middle" y={24} fontSize={9} fontWeight={700} fill={BLACK}>
+                  {node.year ?? ""}
+                </text>
+              )}
+              {endpoint && (
+                <circle
+                  r={25}
+                  fill="none"
+                  stroke={BLACK}
+                  strokeWidth={2}
+                  strokeDasharray="4 3"
+                />
+              )}
+            </g>
+          );
+        })}
+      </svg>
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t-2 border-[#0B0B0B] bg-[#FFFFFF] px-4 py-2.5">
+        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide">
+          <span className="h-3.5 w-3.5 rounded-full border-2 border-[#0B0B0B] bg-[#FFE600]" />
+          Person
+        </span>
+        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide">
+          <span className="h-3.5 w-5 border-2 border-[#0B0B0B] bg-[#4D7CFE]" />
+          Movie
+        </span>
+        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide">
+          <span className="h-3.5 w-3.5 rounded-full border-2 border-dashed border-[#0B0B0B]" />
+          Start / end
+        </span>
+        <span className="ml-auto hidden text-[11px] font-bold uppercase tracking-wide text-[#6B6B6B] sm:block">
+          click any node to explore
+        </span>
+      </div>
+    </div>
   );
 }

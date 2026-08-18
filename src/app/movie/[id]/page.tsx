@@ -223,7 +223,7 @@ export default function MoviePage({
         </section>
       )}
 
-      <section className="mt-10">
+      <section className="mt-14 mb-8">
         <SectionHeading>Cast network</SectionHeading>
         <Typography variant="body2" sx={{ mb: 3, fontWeight: 600, maxWidth: 640 }}>
           {movie.title} in the middle, its cast around it, and the other films
